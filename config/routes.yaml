@@ -3,4 +3,4 @@
 #    controller: App\Controller\DefaultController::index
 movies:
   type: rest
-  ressource: App\Controller\MoviesController
+  resource: App\Controller\MoviesController
