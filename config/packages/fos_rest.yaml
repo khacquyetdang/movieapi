@@ -11,7 +11,7 @@ fos_rest:
   param_fetcher_listener: true
   exception:
     enabled: true
-    exception_controller: "fos_rest.exception.controller:showAction"
+    exception_controller: App\Controller\ExceptionController::showAction
 #        codes:
 #            App\Exception\MyException: 403
 #        messages:
