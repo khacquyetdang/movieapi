@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Movie;
+use App\Entity\Role;
 use App\Exception\ValidationException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\ControllerTrait;
@@ -62,5 +63,35 @@ class MoviesController extends AbstractController
             return $this->view(null, 404);
         }
         return $movie;
+    }
+
+    /**
+     * @Rest\View
+     */
+    public function getMovieRolesAction(?Movie $movie)
+    {
+        if (null === $movie) {
+            return $this->view(null, 404);
+        }
+        return $movie->getRoles();
+    }
+
+    /**
+     * @Rest\View(statusCode=201)
+     * @ParamConverter("role", converter="fos_rest.request_body")
+     * @Rest\NoRoute
+     */
+    public function postMovieRolesAction(Movie $movie, Role $role, ConstraintViolationListInterface $validationErrors)
+    {
+        if (count($validationErrors) > 0) {
+            throw new ValidationException($validationErrors);
+        }
+
+        $role->setMovie($movie);
+        $movie->getRoles()->add($role);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($movie);
+        $em->flush();
+        return $role;
     }
 }

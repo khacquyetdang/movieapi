@@ -20,3 +20,10 @@ humans_post:
   defaults:
     _controller: App\Controller\HumansController:postHumansAction
     _format: json
+
+movies_roles_post:
+  path: /movies/{movies}/roles
+  methods: [POST]
+  defaults:
+    _controller: App\Controller\MoviesController:postMovieRolesAction
+    _format: json
