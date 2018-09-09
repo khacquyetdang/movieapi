@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PersonRepository")
@@ -17,17 +19,23 @@ class Person
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=70)
+     * @ORM\Column(name="first_name", type="string", length=70)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=70)
      */
     private $firstName;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(name="last_name", type="string", length=100)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=100)
      */
     private $lastName;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(name="date_of_birth", type="datetime")
+     * @Assert\NotBlank()
+     * @Serializer\Type("DateTime<'Y-m-d'>")
      */
     private $dateOfBirth;
 
