@@ -88,8 +88,10 @@ class MoviesController extends AbstractController
         }
 
         $role->setMovie($movie);
-        $movie->getRoles()->add($role);
         $em = $this->getDoctrine()->getManager();
+        $em->persist($role);
+        $movie->getRoles()->add($role);
+
         $em->persist($movie);
         $em->flush();
         return $role;

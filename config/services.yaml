@@ -1,5 +1,5 @@
 parameters:
-    locale: 'en'
+  locale: "en"
 
 # This file is the entry point to configure your own services.
 # Files in the packages/ subdirectory configure your dependencies.
@@ -34,3 +34,7 @@ services:
     tags: ["controller.service_arguments"]
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
+
+  App\Serializer\DoctrineEntityDeserializationSubscriber:
+    tags: ["jms_serializer.event_subscriber"]
+    public: true

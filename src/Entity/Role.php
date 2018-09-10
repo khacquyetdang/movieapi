@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Annotation as App;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -20,6 +21,7 @@ class Role
     /**
      * @var Person
      * @ORM\ManyToOne(targetEntity="Person")
+     * @App\DeserializeEntity(type="App\Entity\Person", idField="id", idGetter="getId", setter="setPerson")
      */
     private $person;
 
@@ -107,7 +109,7 @@ class Role
      *
      * @return  Movie
      */
-    public function getMovie()
+    public function getMovie(): Movie
     {
         return $this->movie;
     }
