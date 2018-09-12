@@ -78,7 +78,8 @@ class MoviesController extends AbstractController
 
     /**
      * @Rest\View(statusCode=201)
-     * @ParamConverter("role", converter="fos_rest.request_body")
+     * @ParamConverter("role", converter="fos_rest.request_body",
+     *      options={"deserializationContext"={"groups"={"Deserialize"}}})
      * @Rest\NoRoute
      */
     public function postMovieRolesAction(Movie $movie, Role $role, ConstraintViolationListInterface $validationErrors)

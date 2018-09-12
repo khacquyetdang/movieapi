@@ -2,12 +2,19 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Hateoas\Configuration\Annotation as Hateoas;
+use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MovieRepository")
+ * @Hateoas\Relation(
+ *      "roles",
+ *       href=@Hateoas\Route("get_movie_roles", parameters={"movie" = "expr(object.getId())"})
+ *)
  */
 class Movie
 {
@@ -15,6 +22,7 @@ class Movie
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Serializer\Groups("Default")
      */
     private $id;
 
@@ -48,6 +56,7 @@ class Movie
     /**
      * @var ArrayCollection
      * @ORM\OneToMany(targetEntity="Role", mappedBy="movie", cascade={"remove"})
+     * @Serializer\Exclude()
      */
     private $roles;
 

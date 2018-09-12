@@ -16,7 +16,8 @@
         "symfony/orm-pack": "^1.0",
         "symfony/twig-bundle": "*",
         "symfony/validator": "*",
-        "symfony/yaml": "*"
+        "symfony/yaml": "*",
+        "willdurand/hateoas-bundle": "^1.4"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",

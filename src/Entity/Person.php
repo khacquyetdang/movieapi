@@ -8,6 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PersonRepository")
+ * @Serializer\ExclusionPolicy("ALL")
  */
 class Person
 {
@@ -15,6 +16,8 @@ class Person
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Serializer\Groups({"Default", "Deserialize"})
+     * @Serializer\Expose()
      */
     private $id;
 
@@ -22,6 +25,8 @@ class Person
      * @ORM\Column(name="first_name", type="string", length=70)
      * @Assert\NotBlank()
      * @Assert\Length(min=2, max=70)
+     * @Serializer\Groups({"Default", "Deserialize"})
+     * @Serializer\Expose()
      */
     private $firstName;
 
@@ -29,6 +34,8 @@ class Person
      * @ORM\Column(name="last_name", type="string", length=100)
      * @Assert\NotBlank()
      * @Assert\Length(min=2, max=100)
+     * @Serializer\Groups({"Default", "Deserialize"})
+     * @Serializer\Expose()
      */
     private $lastName;
 
@@ -36,6 +43,8 @@ class Person
      * @ORM\Column(name="date_of_birth", type="datetime")
      * @Assert\NotBlank()
      * @Serializer\Type("DateTime<'Y-m-d'>")
+     * @Serializer\Groups({"Default", "Deserialize"})
+     * @Serializer\Expose()
      */
     private $dateOfBirth;
 
