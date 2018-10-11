@@ -35,6 +35,7 @@ class MoviesController extends AbstractController
 
     /**
      * @Rest\View()
+     * @Security("is_authenticated()")
      */
     public function getMoviesAction()
     {
@@ -117,7 +118,6 @@ class MoviesController extends AbstractController
     }
 
     /**
-     * @Rest\View(statusCode=201)
      * @Rest\NoRoute()
      * @ParamConverter("modifiedMovie", converter="fos_rest.request_body",
      * options={"validator" = {"groups" = {"Patch"}}}
@@ -127,8 +127,6 @@ class MoviesController extends AbstractController
     public function patchMovieAction(?Movie $movie, Movie $modifiedMovie, ConstraintViolationListInterface $validationErrors)
     {
         //
-
-        dump("patchMovieAction");
         if (null === $movie) {
             return $this->view(null, 404);
         }

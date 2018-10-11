@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "291fae05b6e61d66f73ac38926d10fba",
+    "content-hash": "a5cc3b2d4a19ea4613339cb393c61be7",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2594,7 +2594,7 @@
         },
         {
             "name": "symfony/expression-language",
-            "version": "v4.1.4",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/expression-language.git",

@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
@@ -20,7 +21,6 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function supports(Request $request)
     {
-        dump("support");exit;
         return $request->headers->has('X-Auth-Token');
     }
 
@@ -30,8 +30,6 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function getCredentials(Request $request)
     {
-        dump("getCredentials");exit;
-
         $token = $request->headers->get('X-Auth-Token');
         return $token;
 
@@ -44,7 +42,6 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        dump("get user");exit;
         return new User('username', 'password');
         /*
     $apiKey = $credentials['token'];
@@ -62,7 +59,6 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     {
         // check credentials - e.g. make sure the password is valid
         // no credential check is needed in this case
-        dump("checkCredentials", $credentials);exit;
         return 'abcde' === $credentials;
         // return true to cause authentication success
         //return true;
@@ -76,8 +72,6 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        dump("onAuthenticationFailure");
-        exit;
         $data = array(
             'message' => strtr($exception->getMessageKey(), $exception->getMessageData()),
 
@@ -93,7 +87,6 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function start(Request $request, AuthenticationException $authException = null)
     {
-        dump("start authneticator");
         $data = array(
             // you might translate this message
             'message' => 'Authentication Required',
