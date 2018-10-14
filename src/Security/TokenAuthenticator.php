@@ -85,9 +85,10 @@ return;
      */
     public function start(Request $request, AuthenticationException $authException = null)
     {
+        $message = $authException->getMessage() ? $authException->getMessage() : 'Authentication Required';
         $data = array(
             // you might translate this message
-            'message' => 'Authentication Required',
+            'message' => $message,
         );
 
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);

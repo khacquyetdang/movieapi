@@ -33,6 +33,12 @@ class User implements UserInterface
      */
     private $apiKey;
 
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    private $salt;
+
     public function getApiKey(): ?string
     {
         return $this->apiKey;
@@ -117,7 +123,7 @@ class User implements UserInterface
      */
     public function getSalt()
     {
-        // not needed when using the "bcrypt" algorithm in security.yaml
+        return $this->salt;
     }
 
     /**
@@ -127,5 +133,9 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+    public function __construct()
+    {
+        $this->salt = \uniqid();
     }
 }
