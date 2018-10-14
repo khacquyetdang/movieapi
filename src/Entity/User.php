@@ -28,6 +28,24 @@ class User implements UserInterface
     private $roles = [];
 
     /**
+     * @var string
+     * @ORM\Column(type="string", unique=true)
+     */
+    private $apiKey;
+
+    public function getApiKey(): ?string
+    {
+        return $this->apiKey;
+    }
+
+    public function setApiKey(string $apiKey): self
+    {
+        $this->apiKey = $apiKey;
+
+        return $this;
+    }
+
+    /**
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
