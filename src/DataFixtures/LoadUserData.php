@@ -20,7 +20,6 @@ class LoadUserData extends Fixture implements ContainerAwareInterface
 
         $user1 = new User();
 
-        $user1->setApiKey("83218ac34c1834c26781fe4bde918ee4");
         $user1->setEmail("khacquyet.dang@gmail.com");
         $user1->setPassword($passwordEncoder->encodePassword($user1, "dhlkhlkdjhfdqs", $user1->getSalt()));
 
@@ -28,7 +27,6 @@ class LoadUserData extends Fixture implements ContainerAwareInterface
 
         $user2 = new User();
 
-        $user2->setApiKey("9aaa39c281027c8fd7ca333a8a9e022a");
         $user2->setEmail("hongtran283@gmail.com");
         $user2->setPassword($passwordEncoder->encodePassword($user2, "ljdhfqljhld;cnb;,", $user2->getSalt()));
         $manager->persist($user2);

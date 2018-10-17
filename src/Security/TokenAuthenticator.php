@@ -2,6 +2,9 @@
 
 namespace App\Security;
 
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
+use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +17,17 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
 class TokenAuthenticator extends AbstractGuardAuthenticator
 {
+
+    /**
+     * @var JWTEncoderInterface
+     */
+    private $jwtEncoder;
+
+    public function __construct(JWTEncoderInterface $jwtEncoder)
+    {
+        $this->jwtEncoder = $jwtEncoder;
+    }
+
     /**
      * Called on every request to decide if this authenticator should be
      * used for the request. Returning false will cause this authenticator
@@ -21,7 +35,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function supports(Request $request)
     {
-        return $request->headers->has('X-Auth-Token');
+        return $request->headers->has('authorization');
     }
 
     /**
@@ -30,7 +44,12 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function getCredentials(Request $request)
     {
-        $token = $request->headers->get('X-Auth-Token');
+        $extractor = new AuthorizationHeaderTokenExtractor('Bearer', 'Authorization');
+        $token = $extractor->extract($request);
+        if (!$token) {
+            return null;
+        }
+
         return $token;
 
         /*
@@ -42,15 +61,15 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        $apiKey = $credentials;
-/*
-if (null === $apiKey) {
-return;
-}
-
-// if a User object, checkCredentials() is called
- */
-        return $userProvider->loadUserByUsername($apiKey);
+        try {
+            $data = $this->jwtEncoder->decode($credentials);
+            if ($data === false) {
+                return null;
+            }
+            return $userProvider->loadUserByUsername($data['email']);
+        } catch (JWTDecodeFailureException $exception) {
+            return null;
+        }
     }
 
     public function checkCredentials($credentials, UserInterface $user)

@@ -10,7 +10,7 @@ security:
     database:
       entity:
         class: App\Entity\User
-        property: apiKey
+        property: email
 
   firewalls:
     dev:

@@ -28,30 +28,6 @@ class User implements UserInterface
     private $roles = [];
 
     /**
-     * @var string
-     * @ORM\Column(type="string", unique=true)
-     */
-    private $apiKey;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string")
-     */
-    private $salt;
-
-    public function getApiKey(): ?string
-    {
-        return $this->apiKey;
-    }
-
-    public function setApiKey(string $apiKey): self
-    {
-        $this->apiKey = $apiKey;
-
-        return $this;
-    }
-
-    /**
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
@@ -121,21 +97,14 @@ class User implements UserInterface
     /**
      * @see UserInterface
      */
-    public function getSalt()
-    {
-        return $this->salt;
-    }
-
-    /**
-     * @see UserInterface
-     */
     public function eraseCredentials()
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
-    public function __construct()
+
+    public function getSalt()
     {
-        $this->salt = \uniqid();
+
     }
 }

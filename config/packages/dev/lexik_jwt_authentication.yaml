@@ -1,0 +1,5 @@
+lexik_jwt_authentication:
+  private_key_path: "%kernel.project_dir%/var/jwt/private.pem"
+  public_key_path: "%kernel.project_dir%/var/jwt/public.pem"
+  pass_phrase: movieapiSF4
+  token_ttl: 3600
