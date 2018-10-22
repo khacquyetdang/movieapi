@@ -35,7 +35,13 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function supports(Request $request)
     {
-        return $request->headers->has('authorization');
+        $extractor = new AuthorizationHeaderTokenExtractor('Bearer', 'Authorization');
+        $token = $extractor->extract($request);
+        if (!$token) {
+            return false;
+        }
+        return true;
+
     }
 
     /**
