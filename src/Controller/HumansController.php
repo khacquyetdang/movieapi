@@ -7,9 +7,13 @@ use App\Exception\ValidationException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\ControllerTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
+/**
+ * @Security("is_anonymous() or is_authenticated()")
+ */
 class HumansController extends AbstractController
 {
     use ControllerTrait;
