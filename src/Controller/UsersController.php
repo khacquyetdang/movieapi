@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\EntityMerger;
 use App\Entity\User;
 use App\Exception\ValidationException;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -28,10 +29,16 @@ class UsersController extends AbstractController
      */
     private $jwtEncoder;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder, JWTEncoderInterface $jwtEncoder)
-    {
+    /**
+     * @var EntityMerger
+     */
+    private $entityMerger;
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder,
+        JWTEncoderInterface $jwtEncoder,
+        EntityMerger $entityMerger) {
         $this->passwordEncoder = $passwordEncoder;
         $this->jwtEncoder = $jwtEncoder;
+        $this->entityMerger = $entityMerger;
     }
 
     /**
@@ -59,13 +66,54 @@ class UsersController extends AbstractController
             throw new ValidationException($validationErrors);
         }
 
-        $user->setPassword($this->passwordEncoder->encodePassword($user, $user->getPassword()));
+        $this->encodePassword($user);
         $user->setRoles([User::ROLE_USER]);
+        $this->persistUser($user);
+        return $user;
+    }
+
+    private function persistUser($user)
+    {
         $em = $this->getDoctrine()->getManager();
         $em->persist(($user));
         $em->flush();
 
-        return $user;
     }
+    private function encodePassword($user)
+    {
+        $user->setPassword($this->passwordEncoder->encodePassword($user, $user->getPassword()));
+    }
+    /**
+     * @Rest\NoRoute()
+     * @ParamConverter("modifiedUser", converter="fos_rest.request_body",
+     *      options={
+     *           "validator"={"groups"={"Patch"}},
+     *           "deserializationContext"={"groups"={"Deserialize"}}
+     *      }
+     * )
+     * @Security("is_granted('edit', theUser)", message="Access denied")
+     */
+    public function patchUserAction(?User $theUser,
+        User $modifiedUser,
+        ConstraintViolationListInterface $validationErrors) {
+        if (null === $theUser) {
+            throw new NotFoundHttpException();
+        }
+        if (count($validationErrors) > 0) {
+            throw new ValidationException($validationErrors);
+        }
 
+        if (empty($modifiedUser->getPassword())) {
+            $modifiedUser->setPassword(null);
+        }
+
+        $this->entityMerger->merge($theUser, $modifiedUser);
+        $this->encodePassword($theUser);
+        $this->persistUser($theUser);
+        if ($modifiedUser->getPassword()) {
+            // $this->tokenStorage->invalidateToken($theUser->getUsername());
+        }
+
+        return $theUser;
+    }
 }

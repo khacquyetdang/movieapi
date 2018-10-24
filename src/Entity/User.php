@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @UniqueEntity("email")
+ * @UniqueEntity("email", groups={"Default", "Patch"})
  */
 class User implements UserInterface
 {
@@ -35,7 +35,7 @@ class User implements UserInterface
      * @ORM\Column(type="simple_array", length=200)
      * @Serializer\Exclude()
      */
-    private $roles = [];
+    private $roles;
 
     /**
      * @var string The hashed password
@@ -44,7 +44,7 @@ class User implements UserInterface
      * @Assert\Regex(
      *  pattern="/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{7,}/",
      *  message="Password must be seven characters long and containe at least one digit, one upper case and on lower case letter",
-     *  groups={"Default"}
+     *  groups={"Default", "Patch"}
      * )
      * @Serializer\Groups({"Deserialize"})
      */
@@ -56,7 +56,7 @@ class User implements UserInterface
      * @Assert\Expression(
      *  "this.getPassword() === this.getRetypedPassword()",
      *  message="Passwords does not match",
-     *  groups={"Default"}
+     *  groups={"Default", "Patch"}
      * )
      * @Serializer\Type("string")
      * @Serializer\Groups({"Deserialize"})
