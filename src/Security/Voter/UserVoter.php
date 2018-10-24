@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class UserVoter extends Voter
 {
     const SHOW = 'show';
+    const EDIT = 'edit';
 
     /**
      * @var AccessDecisionManagerInterface
@@ -25,7 +26,7 @@ class UserVoter extends Voter
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        $isSupported = in_array($attribute, [self::SHOW])
+        $isSupported = in_array($attribute, [self::SHOW, self::EDIT])
         && $subject instanceof \App\Entity\User;
         return $isSupported;
 
@@ -38,6 +39,7 @@ class UserVoter extends Voter
         }
         switch ($attribute) {
             case self::SHOW:
+            case self::EDIT:
                 return $this->isUserHimSelf($subject, $token);
         }
 
