@@ -1,0 +1,30 @@
+App\Entity\Movie:
+  movie_{1..100}:
+    title: <streetName()>
+    year: <numberBetween(1886, 2017)>
+    time: <numberBetween(30, 300)>
+    description: <sentence()>
+
+App\Entity\Person:
+  person_{1..1000}:
+    firstName: <firstName()>
+    lastName: <lastName()>
+    dateOfBirth: <dateTimeBetween('1920-01-01', '2007-12-30')>
+
+App\Entity\Role:
+  role_{1..5000}:
+    person: "@person_<numberBetween(1, 1000)>"
+    movie: "@movie_<numberBetween(1, 100)>"
+    playedName: <firstName()> <lastName()>
+
+App\Entity\User:
+  user1:
+    email: john_doe
+    password: Secure123!
+    roles:
+      - "ROLE_ADMIN"
+  user2:
+    email: jane_doe
+    password: ExampleSecure321!
+    roles:
+      - "ROLE_ADMIN"

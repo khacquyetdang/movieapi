@@ -40,3 +40,6 @@ services:
   App\Serializer\DoctrineEntityDeserializationSubscriber:
     tags: ["jms_serializer.event_subscriber"]
     public: true
+
+  App\DataFixtures\Processor\UserProcessor:
+    tags: [{ name: fidry_alice_data_fixtures.processor }]

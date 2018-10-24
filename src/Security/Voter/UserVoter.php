@@ -2,13 +2,25 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserVoter extends Voter
 {
     const SHOW = 'show';
+
+    /**
+     * @var AccessDecisionManagerInterface
+     */
+    private $decisionManager;
+    public function __construct(AccessDecisionManagerInterface $decisionManager)
+    {
+        $this->decisionManager = $decisionManager;
+    }
+
     protected function supports($attribute, $subject)
     {
         // replace with your own logic
@@ -21,6 +33,9 @@ class UserVoter extends Voter
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
+        if ($this->decisionManager->decide($token, [User::ROLE_ADMIN])) {
+            return true;
+        }
         switch ($attribute) {
             case self::SHOW:
                 return $this->isUserHimSelf($subject, $token);
