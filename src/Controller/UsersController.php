@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\EntityMerger;
 use App\Entity\User;
 use App\Exception\ValidationException;
+use App\Security\TokenStorage;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -30,15 +31,22 @@ class UsersController extends AbstractController
     private $jwtEncoder;
 
     /**
+     * @var TokenStorage
+     */
+    private $tokenStorage;
+
+    /**
      * @var EntityMerger
      */
     private $entityMerger;
     public function __construct(UserPasswordEncoderInterface $passwordEncoder,
         JWTEncoderInterface $jwtEncoder,
-        EntityMerger $entityMerger) {
+        EntityMerger $entityMerger,
+        TokenStorage $tokenStorage) {
         $this->passwordEncoder = $passwordEncoder;
         $this->jwtEncoder = $jwtEncoder;
         $this->entityMerger = $entityMerger;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -111,7 +119,7 @@ class UsersController extends AbstractController
         $this->encodePassword($theUser);
         $this->persistUser($theUser);
         if ($modifiedUser->getPassword()) {
-            // $this->tokenStorage->invalidateToken($theUser->getUsername());
+            $this->tokenStorage->invalidateToken($theUser->getUsername());
         }
 
         return $theUser;

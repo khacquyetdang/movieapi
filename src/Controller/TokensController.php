@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Security\TokenStorage;
 use FOS\RestBundle\Controller\ControllerTrait;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,10 +25,16 @@ class TokensController extends AbstractController
      */
     private $jwtEncoder;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder, JWTEncoderInterface $jwtEncoder)
-    {
+    /**
+     * @var TokenStorage
+     */
+    private $tokenStorage;
+
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder, JWTEncoderInterface $jwtEncoder,
+        TokenStorage $tokenStorage) {
         $this->passwordEncoder = $passwordEncoder;
         $this->jwtEncoder = $jwtEncoder;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /*
@@ -53,6 +60,7 @@ class TokensController extends AbstractController
             'id' => $user->getId(),
         ]);
 
+        $this->tokenStorage->storeToken($user->getEmail(), $token);
         return new JsonResponse(["token" => $token]);
     }
 }

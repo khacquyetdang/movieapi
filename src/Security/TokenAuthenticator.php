@@ -23,9 +23,15 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     private $jwtEncoder;
 
-    public function __construct(JWTEncoderInterface $jwtEncoder)
-    {
+    /**
+     * @var TokenStorage
+     */
+    private $tokenStorage;
+
+    public function __construct(JWTEncoderInterface $jwtEncoder,
+        TokenStorage $tokenStorage) {
         $this->jwtEncoder = $jwtEncoder;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -70,6 +76,9 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
         try {
             $data = $this->jwtEncoder->decode($credentials);
             if ($data === false) {
+                return null;
+            }
+            if (!$this->tokenStorage->isTokenValid($data['email'], $credentials)) {
                 return null;
             }
             return $userProvider->loadUserByUsername($data['email']);
