@@ -115,11 +115,16 @@ class UsersController extends AbstractController
             $modifiedUser->setPassword(null);
         }
 
+        if (empty($modifiedUser->getPassword())) {
+            $modifiedUser->setPassword(null);
+        }
+
         $this->entityMerger->merge($theUser, $modifiedUser);
         $this->encodePassword($theUser);
         $this->persistUser($theUser);
         if ($modifiedUser->getPassword()) {
             $this->tokenStorage->invalidateToken($theUser->getUsername());
+            // $this->tokenStorage->invalidateToken($theUser->getUsername());
         }
 
         return $theUser;
