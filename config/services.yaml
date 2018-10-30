@@ -1,6 +1,5 @@
 parameters:
   locale: "en"
-
 # This file is the entry point to configure your own services.
 # Files in the packages/ subdirectory configure your dependencies.
 
@@ -43,3 +42,10 @@ services:
 
   App\DataFixtures\Processor\UserProcessor:
     tags: [{ name: fidry_alice_data_fixtures.processor }]
+
+  App\Controller\ImagesController:
+    class: App\Controller\ImagesController
+    arguments:
+      - '@App\Repository\ImageRepository'
+      - "%kernel.project_dir%/web/images"
+      - "/images/"

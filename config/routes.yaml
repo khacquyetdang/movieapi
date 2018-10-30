@@ -60,3 +60,20 @@ tokens_post:
   defaults:
     _controller: App\Controller\TokensController:postTokenAction
     _format: json
+
+images:
+  resource: App\Controller\ImagesController
+  type: rest
+
+images_post:
+  path: /images
+  methods: [POST]
+  defaults:
+    _controller: App\Controller\ImagesController:postImagesAction
+    _format: json
+
+images_upload_put:
+  path: /images/{image}/upload
+  methods: [PUT]
+  defaults:
+    _controller: App\Controller\ImagesController:putImageUploadAction
