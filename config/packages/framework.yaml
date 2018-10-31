@@ -11,6 +11,7 @@ framework:
 
   #esi: true
   #fragments: true
+  assets: ~
   php_errors:
     log: true
   cache:

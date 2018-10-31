@@ -39,6 +39,14 @@ class ImagesController extends AbstractController
         $this->imageDirectory = $imageDirectory;
         $this->imageBaseUrl = $imageBaseUrl;
     }
+
+    /**
+     * @Rest\View
+     */
+    public function getImagesAction()
+    {
+        return $this->imageRepository->findAll();
+    }
     /**
      * @Rest\View(statusCode=201)
      * @Rest\NoRoute()
@@ -95,6 +103,7 @@ class ImagesController extends AbstractController
         $newFileName = md5(uniqid()) . '.' . $extensionGuesser->guess($mimeType);
 
         // copy the tempfile to the final upload
+
         copy($tmpFilePath, $this->imageDirectory . DIRECTORY_SEPARATOR . $newFileName);
 
         $image->setUrl($this->imageBaseUrl . $newFileName);

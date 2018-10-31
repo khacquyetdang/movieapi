@@ -47,5 +47,5 @@ services:
     class: App\Controller\ImagesController
     arguments:
       - '@App\Repository\ImageRepository'
-      - "%kernel.project_dir%/web/images"
+      - "%kernel.project_dir%/public/images"
       - "/images/"
