@@ -209,6 +209,9 @@
             "ref": "e9c58bfc414cfb7f06e8e5ae9f589868498f5d6a"
         }
     },
+    "symfony/asset": {
+        "version": "v4.1.6"
+    },
     "symfony/cache": {
         "version": "v4.1.4"
     },
