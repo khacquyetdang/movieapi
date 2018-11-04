@@ -21,14 +21,14 @@ class LoadUserData extends Fixture implements ContainerAwareInterface
         $user1 = new User();
 
         $user1->setEmail("khacquyet.dang@gmail.com");
-        $user1->setPassword($passwordEncoder->encodePassword($user1, "dhlkhlkdjhfdqs", $user1->getSalt()));
+        $user1->setPassword($passwordEncoder->encodePassword($user1, "Secure123!", $user1->getSalt()));
         $user1->setRoles([User::ROLE_ADMIN]);
         $manager->persist($user1);
 
         $user2 = new User();
 
         $user2->setEmail("hongtran283@gmail.com");
-        $user2->setPassword($passwordEncoder->encodePassword($user2, "ljdhfqljhld;cnb;,", $user2->getSalt()));
+        $user2->setPassword($passwordEncoder->encodePassword($user2, "ExampleSecure321!", $user2->getSalt()));
         $user2->setRoles([User::ROLE_USER]);
         $manager->persist($user2);
 

@@ -19,12 +19,17 @@ App\Entity\Role:
 
 App\Entity\User:
   user1:
-    email: john_doe
+    email: hongtran283@gmail.com
     password: Secure123!
     roles:
       - "ROLE_ADMIN"
   user2:
-    email: jane_doe
+    email: khacquyet.dang@gmail.com
     password: ExampleSecure321!
     roles:
       - "ROLE_ADMIN"
+  user3:
+    email: leon.dang@gmail.com
+    password: ExampleSecure321!
+    roles:
+      - "ROLE_USER"

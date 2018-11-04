@@ -28,10 +28,12 @@
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "hautelook/alice-bundle": "^2.3",
+        "nelmio/alice": "^3.5",
         "symfony/dotenv": "*",
         "symfony/maker-bundle": "^1.7",
         "symfony/var-dumper": "*",
-        "symfony/web-server-bundle": "*"
+        "symfony/web-server-bundle": "*",
+        "theofidry/alice-data-fixtures": "^1.1"
     },
     "config": {
         "preferred-install": {
@@ -67,6 +69,10 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "reset-db": [
+            "php bin/console doctrine:schema:drop --force; php bin/console doctrine:schema:create; php bin/console hautelook:fixtures:load -n;"
+
         ]
     },
     "conflict": {

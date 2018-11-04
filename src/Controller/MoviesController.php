@@ -6,11 +6,15 @@ use App\Entity\EntityMerger;
 use App\Entity\Movie;
 use App\Entity\Role;
 use App\Exception\ValidationException;
+use App\Repository\MovieRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\ControllerTrait;
+use Hateoas\Representation\CollectionRepresentation;
+use Hateoas\Representation\PaginatedRepresentation;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
@@ -37,10 +41,33 @@ class MoviesController extends AbstractController
      * @Rest\View()
      * @Security("is_authenticated()")
      */
-    public function getMoviesAction()
+    public function getMoviesAction(Request $request)
     {
-        $movies = $this->getDoctrine()->getRepository('App:Movie')->findAll();
-        return $movies;
+        $limit = $request->get('limit', 5);
+        $page = $request->get('page', 1);
+
+        $offset = ($page - 1) * $limit;
+        /**
+         * @var MovieRepository $repository
+         */
+        $repository = $this->getDoctrine()->getRepository('App:Movie');
+        $movieCount = $repository->count([]);
+
+        $movies = $repository->findBy([], [], $limit, $offset);
+
+        $pageCount = (int) ceil($movieCount / $limit);
+
+        $collection = new CollectionRepresentation($movies);
+
+        $paginated = new PaginatedRepresentation(
+            $collection,
+            'get_movies',
+            [],
+            $page,
+            $limit,
+            $pageCount
+        );
+        return $paginated;
     }
 
     /**
@@ -87,12 +114,32 @@ class MoviesController extends AbstractController
     /**
      * @Rest\View
      */
-    public function getMovieRolesAction(?Movie $movie)
+    public function getMovieRolesAction(Request $request, ?Movie $movie)
     {
         if (null === $movie) {
             return $this->view(null, 404);
         }
-        return $movie->getRoles();
+
+        $roles = $movie->getRoles();
+        $limit = $request->get('limit', 5);
+        $page = $request->get('page', 1);
+
+        $offset = ($page - 1) * $limit;
+
+        $pageCount = (int) ceil(count($roles) / $limit);
+
+        $collection = new CollectionRepresentation(array_slice($roles->toArray(), $offset, $limit));
+
+        $paginated = new PaginatedRepresentation(
+            $collection,
+            'get_movie_roles',
+            ['movie' => $movie->getId()],
+            $page,
+            $limit,
+            $pageCount
+        );
+
+        return $paginated;
     }
 
     /**
