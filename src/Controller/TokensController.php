@@ -56,7 +56,7 @@ class TokensController extends AbstractController
 
         $token = $this->jwtEncoder->encode([
             'email' => $user->getEmail(),
-            'exp' => time() + 3600,
+            'exp' => time() + 36000,
             'id' => $user->getId(),
         ]);
 

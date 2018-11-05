@@ -2,15 +2,13 @@
 
 namespace App\Controller;
 
+use App\Controller\Pagination\Pagination;
 use App\Entity\EntityMerger;
 use App\Entity\Movie;
 use App\Entity\Role;
 use App\Exception\ValidationException;
-use App\Repository\MovieRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\ControllerTrait;
-use Hateoas\Representation\CollectionRepresentation;
-use Hateoas\Representation\PaginatedRepresentation;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,11 +28,17 @@ class MoviesController extends AbstractController
     private $entityMerger;
 
     /**
+     * @var Pagination
+     */
+    private $pagination;
+
+    /**
      * @param EntityMerger $entityMerger
      */
-    public function __construct(EntityMerger $entityMerger)
+    public function __construct(EntityMerger $entityMerger, Pagination $pagination)
     {
         $this->entityMerger = $entityMerger;
+        $this->pagination = $pagination;
     }
 
     /**
@@ -43,31 +47,13 @@ class MoviesController extends AbstractController
      */
     public function getMoviesAction(Request $request)
     {
-        $limit = $request->get('limit', 5);
-        $page = $request->get('page', 1);
-
-        $offset = ($page - 1) * $limit;
-        /**
-         * @var MovieRepository $repository
-         */
-        $repository = $this->getDoctrine()->getRepository('App:Movie');
-        $movieCount = $repository->count([]);
-
-        $movies = $repository->findBy([], [], $limit, $offset);
-
-        $pageCount = (int) ceil($movieCount / $limit);
-
-        $collection = new CollectionRepresentation($movies);
-
-        $paginated = new PaginatedRepresentation(
-            $collection,
-            'get_movies',
+        return $this->pagination->paginate($request, 'App\Entity\Movie',
             [],
-            $page,
-            $limit,
-            $pageCount
+            'count',
+            [[]],
+            'get_movies',
+            []
         );
-        return $paginated;
     }
 
     /**
@@ -120,26 +106,14 @@ class MoviesController extends AbstractController
             return $this->view(null, 404);
         }
 
-        $roles = $movie->getRoles();
-        $limit = $request->get('limit', 5);
-        $page = $request->get('page', 1);
-
-        $offset = ($page - 1) * $limit;
-
-        $pageCount = (int) ceil(count($roles) / $limit);
-
-        $collection = new CollectionRepresentation(array_slice($roles->toArray(), $offset, $limit));
-
-        $paginated = new PaginatedRepresentation(
-            $collection,
+        return $this->pagination->paginate($request,
+            'App\Entity\Role',
+            [],
+            'getCountForMovie',
+            [$movie->getId()],
             'get_movie_roles',
-            ['movie' => $movie->getId()],
-            $page,
-            $limit,
-            $pageCount
+            ['movie' => $movie->getId()]
         );
-
-        return $paginated;
     }
 
     /**
