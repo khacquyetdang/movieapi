@@ -7,6 +7,9 @@ use App\Entity\EntityMerger;
 use App\Entity\Movie;
 use App\Entity\Role;
 use App\Exception\ValidationException;
+use App\Resource\Filtering\Movie\MovieFilterDefinitionFactory;
+use App\Resource\Pagination\Movie\MoviePagination;
+use App\Resource\Pagination\PageRequestFactory;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\ControllerTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -33,27 +36,39 @@ class MoviesController extends AbstractController
     private $pagination;
 
     /**
+     * @var MoviePagination
+     */
+    private $moviePagination;
+
+    /**
      * @param EntityMerger $entityMerger
      */
-    public function __construct(EntityMerger $entityMerger, Pagination $pagination)
+    public function __construct(EntityMerger $entityMerger, Pagination $pagination, MoviePagination $moviePagination)
     {
         $this->entityMerger = $entityMerger;
         $this->pagination = $pagination;
+        $this->moviePagination = $moviePagination;
     }
 
     /**
      * @Rest\View()
-     * @Security("is_authenticated()")
      */
     public function getMoviesAction(Request $request)
     {
-        return $this->pagination->paginate($request, 'App\Entity\Movie',
-            [],
-            'count',
-            [[]],
-            'get_movies',
-            []
-        );
+        //     * @Security("is_authenticated()")
+
+        $pageRequestFactory = new PageRequestFactory();
+        $page = $pageRequestFactory->fromRequest($request);
+
+        $movieFilterDefinitonFactory = new MovieFilterDefinitionFactory();
+
+        /**
+         * @var MovieFilterDefinition
+         */
+        $movieFilterDefiniton = $movieFilterDefinitonFactory->factory($request);
+
+        return $this->moviePagination->paginate($page, $movieFilterDefiniton);
+
     }
 
     /**
@@ -102,6 +117,7 @@ class MoviesController extends AbstractController
      */
     public function getMovieRolesAction(Request $request, ?Movie $movie)
     {
+
         if (null === $movie) {
             return $this->view(null, 404);
         }

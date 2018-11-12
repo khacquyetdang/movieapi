@@ -38,9 +38,7 @@ class Pagination
 
         $offset = ($page - 1) * $limit;
 
-        /**
-         * @var MovieRepository $repository
-         */
+        //* @var MovieRepository $repository
         $repository = $this->doctrineRegistry->getRepository($entityName);
         $ressource = $repository->findBy($criteria, null, $limit, $offset);
 
