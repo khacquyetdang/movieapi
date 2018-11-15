@@ -86,6 +86,13 @@ class MovieResourceFilter
             );
             $qb->setParameter('yearTo', $filter->getYearTo());
         }
+        if (null !== $filter->getSortedByArray()) {
+            foreach ($filter->getSortedByArray() as $by => $order) {
+                $expr = 'desc' === $order ?
+                $qb->expr()->desc("movie.$by") : $qb->expr()->asc("movie.$by");
+                $qb->addOrderBy($expr);
+            }
+        }
         return $qb;
 
     }
