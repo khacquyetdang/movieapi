@@ -2,9 +2,12 @@
 
 namespace App\Resource\Filtering\Movie;
 
-class MovieFilterDefinition
+use App\Resource\Filtering\AbstractFilterDefinition;
+use App\Resource\Filtering\FilterDefinitionInterface;
+use App\Resource\Filtering\SortableFilterDefinitionInterface;
+
+class MovieFilterDefinition extends AbstractFilterDefinition implements FilterDefinitionInterface, SortableFilterDefinitionInterface
 {
-    private const QUERY_PARAMS_BLACKLIST = ['sortedByArray'];
 
     private $title;
 
@@ -71,15 +74,10 @@ class MovieFilterDefinition
         return $this->timeTo;
     }
 
-    public function getQueryParameters(): array
-    {
-        return array_diff_key(get_object_vars($this), \array_flip(self::QUERY_PARAMS_BLACKLIST));
-    }
-
     /**
      * Get the value of sortedByArray
      */
-    public function getSortedByArray()
+    public function getSortedByArray(): ?array
     {
         return $this->sortedByArray;
     }
@@ -99,7 +97,7 @@ class MovieFilterDefinition
     /**
      * Get the value of getSortedBy
      */
-    public function getSortedBy()
+    public function getSortedBy(): ?string
     {
         return $this->sortedBy;
     }
@@ -115,4 +113,10 @@ class MovieFilterDefinition
 
         return $this;
     }
+
+    public function getParameters(): array
+    {
+        return \get_object_vars($this);
+    }
+
 }

@@ -2,9 +2,11 @@
 
 namespace App\Resource\Filtering\Movie;
 
+use App\Resource\Filtering\AbstractFilterDefinitionFactory;
+use App\Resource\Filtering\FilterDefinitionFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class MovieFilterDefinitionFactory
+class MovieFilterDefinitionFactory extends AbstractFilterDefinitionFactory implements FilterDefinitionFactoryInterface
 {
     private const ACCEPTED_SORT_FIELDS = ['title', 'year', 'time'];
     public function factory(Request $request): MovieFilterDefinition
@@ -20,23 +22,8 @@ class MovieFilterDefinitionFactory
             $this->sortQueryToArray($request->get('sortedBy'))
         );
     }
-    private function sortQueryToArray(?string $sortByQuery): ?array
+    public function getAcceptedSortFields(): array
     {
-        if (null === $sortByQuery) {
-            return null;
-        }
-        $result = \array_reduce(\explode(',', $sortByQuery),
-            function ($accu, $item) {
-                $item = trim($item, ' ');
-                list($by, $order) = array_replace(
-                    [1 => 'desc'],
-                    \explode(' ',
-                        \preg_replace('/\s+/', ' ', $item))
-                );
-                $accu[$by] = $order;
-                return $accu;
-            }, []);
-        $result = array_intersect_key($result, \array_flip(self::ACCEPTED_SORT_FIELDS));
-        return $result;
+        return self::ACCEPTED_SORT_FIELDS;
     }
 }

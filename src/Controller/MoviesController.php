@@ -8,8 +8,10 @@ use App\Entity\Movie;
 use App\Entity\Role;
 use App\Exception\ValidationException;
 use App\Resource\Filtering\Movie\MovieFilterDefinitionFactory;
+use App\Resource\Filtering\Role\RoleFilterDefinitionFactory;
 use App\Resource\Pagination\Movie\MoviePagination;
 use App\Resource\Pagination\PageRequestFactory;
+use App\Resource\Pagination\Role\RolePagination;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\ControllerTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -41,13 +43,18 @@ class MoviesController extends AbstractController
     private $moviePagination;
 
     /**
+     * @var RolePagination
+     */
+    private $rolePagination;
+
+    /**
      * @param EntityMerger $entityMerger
      */
-    public function __construct(EntityMerger $entityMerger, Pagination $pagination, MoviePagination $moviePagination)
+    public function __construct(EntityMerger $entityMerger, MoviePagination $moviePagination, RolePagination $rolePagination)
     {
         $this->entityMerger = $entityMerger;
-        $this->pagination = $pagination;
         $this->moviePagination = $moviePagination;
+        $this->rolePagination = $rolePagination;
     }
 
     /**
@@ -117,19 +124,14 @@ class MoviesController extends AbstractController
      */
     public function getMovieRolesAction(Request $request, ?Movie $movie)
     {
+        $pageRequestFactory = new PageRequestFactory();
+        $page = $pageRequestFactory->fromRequest($request);
 
-        if (null === $movie) {
-            return $this->view(null, 404);
-        }
+        $roleFilterDefinitionFactory = new RoleFilterDefinitionFactory();
 
-        return $this->pagination->paginate($request,
-            'App\Entity\Role',
-            [],
-            'getCountForMovie',
-            [$movie->getId()],
-            'get_movie_roles',
-            ['movie' => $movie->getId()]
-        );
+        $roleFilterDefinition = $roleFilterDefinitionFactory->factory($request, $movie->getId());
+
+        return $this->rolePagination->paginate($page, $roleFilterDefinition);
     }
 
     /**
