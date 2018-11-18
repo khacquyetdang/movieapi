@@ -4,11 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Person;
 use App\Exception\ValidationException;
+use App\Resource\Filtering\Person\PersonFilterDefinitionFactory;
+use App\Resource\Pagination\PageRequestFactory;
+use App\Resource\Pagination\Person\PersonPagination;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\ControllerTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
@@ -17,13 +21,28 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 class HumansController extends AbstractController
 {
     use ControllerTrait;
+
+    /**
+     * @var PersonPagination
+     */
+    private $personPagination;
+    public function __construct(PersonPagination $personPagination)
+    {
+        $this->personPagination = $personPagination;
+    }
     /**
      * @Rest\View()
      */
-    public function getHumansAction()
+    public function getHumansAction(Request $request)
     {
-        $movies = $this->getDoctrine()->getRepository('App:Person')->findAll();
-        return $movies;
+        $pageRequestFactory = new PageRequestFactory();
+        $page = $pageRequestFactory->fromRequest($request);
+
+        $personFilterDefinitionFactory = new PersonFilterDefinitionFactory();
+
+        $personFilterDefinition = $personFilterDefinitionFactory->factory($request);
+
+        return $this->personPagination->paginate($page, $personFilterDefinition);
     }
 
     /**
