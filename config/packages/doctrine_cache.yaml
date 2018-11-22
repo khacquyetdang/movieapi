@@ -1,0 +1,6 @@
+doctrine_cache:
+  providers:
+    my_markdown_cache:
+      type: file_system
+      file_system:
+        directory: "%kernel.cache_dir%/markdown_cache"

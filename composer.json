@@ -12,6 +12,7 @@
         "sensio/framework-extra-bundle": "^5.2",
         "snc/redis-bundle": "^2.1",
         "symfony/asset": "*",
+        "symfony/cache": "*",
         "symfony/console": "*",
         "symfony/expression-language": "*",
         "symfony/flex": "^1.1",

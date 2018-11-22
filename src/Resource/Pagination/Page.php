@@ -32,6 +32,10 @@ class Page
         $this->offset = ($page - 1) * $limit;
     }
 
+    public function __toString()
+    {
+        return $this->page . "_" . $this->limit;
+    }
     /**
      * Get the value of offset
      *

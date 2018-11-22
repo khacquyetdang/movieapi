@@ -16,6 +16,9 @@ services:
       # fetching services directly from the container via $container->get() won't work.
       # The best practice is to be explicit about your dependencies anyway.
 
+  Symfony\Component\Cache\Simple\FilesystemCache: ~
+  Psr\SimpleCache\CacheInterface:
+    alias: Symfony\Component\Cache\Simple\FilesystemCache
   # https://github.com/FriendsOfSymfony/FOSRestBundle/issues/1381
   # sensio_framework_extra.view.listener:
   #   alias: Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener

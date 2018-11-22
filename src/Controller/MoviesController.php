@@ -14,6 +14,8 @@ use App\Resource\Pagination\PageRequestFactory;
 use App\Resource\Pagination\Role\RolePagination;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\ControllerTrait;
+use Psr\SimpleCache\CacheInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -48,13 +50,18 @@ class MoviesController extends AbstractController
     private $rolePagination;
 
     /**
+     * @var CacheInterface;
+     */
+    private $cache;
+    /**
      * @param EntityMerger $entityMerger
      */
-    public function __construct(EntityMerger $entityMerger, MoviePagination $moviePagination, RolePagination $rolePagination)
-    {
+    public function __construct(EntityMerger $entityMerger, MoviePagination $moviePagination, RolePagination $rolePagination,
+        CacheInterface $cache) {
         $this->entityMerger = $entityMerger;
         $this->moviePagination = $moviePagination;
         $this->rolePagination = $rolePagination;
+        $this->cache = $cache;
     }
 
     /**
@@ -62,8 +69,9 @@ class MoviesController extends AbstractController
      */
     public function getMoviesAction(Request $request)
     {
-        //     * @Security("is_authenticated()")
+        // /     * @Cache(public=true, maxage=1, smaxage=1, mustRevalidate=true, expires="+1 second"))
 
+        //     * @Security("is_authenticated()")
         $pageRequestFactory = new PageRequestFactory();
         $page = $pageRequestFactory->fromRequest($request);
 
@@ -73,8 +81,14 @@ class MoviesController extends AbstractController
          * @var MovieFilterDefinition
          */
         $movieFilterDefiniton = $movieFilterDefinitonFactory->factory($request);
-
-        return $this->moviePagination->paginate($page, $movieFilterDefiniton);
+        $key = $movieFilterDefiniton->__toString() . "_" . $page->__toString();
+        if ($this->cache->get($key) !== null) {
+            return $this->cache->get($key);
+        } else {
+            $result = $this->moviePagination->paginate($page, $movieFilterDefiniton);
+            $this->cache->set($key, $result);
+            return $result;
+        }
 
     }
 
@@ -110,9 +124,11 @@ class MoviesController extends AbstractController
 
     /**
      * @Rest\View
+     * @Cache(public=true, maxage=1, smaxage=1, mustRevalidate=true, expires="+1 second"))
      */
     public function getMovieAction(?Movie $movie)
     {
+        //dump($this->cache);
         if (null === $movie) {
             return $this->view(null, 404);
         }
