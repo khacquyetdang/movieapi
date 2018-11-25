@@ -14,11 +14,11 @@ use App\Resource\Pagination\PageRequestFactory;
 use App\Resource\Pagination\Role\RolePagination;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\ControllerTrait;
-use Psr\SimpleCache\CacheInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
@@ -50,14 +50,14 @@ class MoviesController extends AbstractController
     private $rolePagination;
 
     /**
-     * @var CacheInterface;
+     * @var TagAwareAdapter;
      */
     private $cache;
     /**
      * @param EntityMerger $entityMerger
      */
     public function __construct(EntityMerger $entityMerger, MoviePagination $moviePagination, RolePagination $rolePagination,
-        CacheInterface $cache) {
+        TagAwareAdapter $cache) {
         $this->entityMerger = $entityMerger;
         $this->moviePagination = $moviePagination;
         $this->rolePagination = $rolePagination;
@@ -69,7 +69,7 @@ class MoviesController extends AbstractController
      */
     public function getMoviesAction(Request $request)
     {
-        // /     * @Cache(public=true, maxage=1, smaxage=1, mustRevalidate=true, expires="+1 second"))
+        //     * @Cache(public=true, maxage=20, smaxage=20, mustRevalidate=true, expires="+20 second"))
 
         //     * @Security("is_authenticated()")
         $pageRequestFactory = new PageRequestFactory();
@@ -82,14 +82,19 @@ class MoviesController extends AbstractController
          */
         $movieFilterDefiniton = $movieFilterDefinitonFactory->factory($request);
         $key = $movieFilterDefiniton->__toString() . "_" . $page->__toString();
-        if ($this->cache->get($key) !== null) {
-            return $this->cache->get($key);
+        //return $this->moviePagination->paginate($page, $movieFilterDefiniton);
+        $item = $this->cache->getItem($key);
+
+        if ($item->isHit()) {
+            return $item->get();
         } else {
             $result = $this->moviePagination->paginate($page, $movieFilterDefiniton);
-            $this->cache->set($key, $result);
+            $item->set($result);
+            $item->tag('get_movies');
+            $item->expiresAfter(120);
+            $this->cache->save($item);
             return $result;
         }
-
     }
 
     /**
@@ -116,6 +121,10 @@ class MoviesController extends AbstractController
         if (null === $movie) {
             return $this->view(null, 404);
         }
+
+        $this->cache->deleteItem($movie->getCacheKey());
+        $this->cache->invalidateTags(array('get_movies'));
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($movie);
         $em->flush();
@@ -124,15 +133,26 @@ class MoviesController extends AbstractController
 
     /**
      * @Rest\View
-     * @Cache(public=true, maxage=1, smaxage=1, mustRevalidate=true, expires="+1 second"))
+     * @Cache(public=true, maxage=10, smaxage=10, mustRevalidate=true, expires="+10 second"))
      */
     public function getMovieAction(?Movie $movie)
     {
-        //dump($this->cache);
         if (null === $movie) {
             return $this->view(null, 404);
         }
-        return $movie;
+
+        $key = $movie->getCacheKey();
+        $item = $this->cache->getItem($key);
+
+        if ($item->isHit()) {
+            return $item->get();
+        } else {
+            $item->set($movie);
+            $item->tag($movie->getCacheTag());
+            $item->expiresAfter(10);
+            $this->cache->save($item);
+            return $movie;
+        }
     }
 
     /**

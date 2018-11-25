@@ -141,4 +141,20 @@ class Movie
 
         return $this;
     }
+    /**
+     * @return string
+     */
+    public function getCacheKey()
+    {
+        $reflect = new \ReflectionClass($this);
+        //dump($reflect->getShortName());
+        return $reflect->getShortName() . "_" . $this->id;
+    }
+    public function getCacheTag()
+    {
+        $reflect = new \ReflectionClass($this);
+        //dump($reflect->getShortName());
+        return $reflect->getShortName();
+    }
+
 }
