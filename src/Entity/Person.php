@@ -48,6 +48,17 @@ class Person
      */
     private $dateOfBirth;
 
+    /**
+     * @var string
+     * @ORM\Column(name="biography", type="text", nullable=true)
+     *
+     * @Assert\Length(min=10, max=5000)
+     * @Serializer\Groups({"Default", "Deserialize"})
+     * @Serializer\Expose()
+     * @Serializer\Since("1.1")
+     */
+    private $biography;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -85,6 +96,30 @@ class Person
     public function setDateOfBirth(\DateTimeInterface $dateOfBirth): self
     {
         $this->dateOfBirth = $dateOfBirth;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of biography
+     *
+     * @return  string
+     */
+    public function getBiography()
+    {
+        return $this->biography;
+    }
+
+    /**
+     * Set the value of biography
+     *
+     * @param  string  $biography
+     *
+     * @return  self
+     */
+    public function setBiography(string $biography)
+    {
+        $this->biography = $biography;
 
         return $this;
     }

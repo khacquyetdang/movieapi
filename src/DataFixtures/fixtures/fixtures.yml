@@ -10,6 +10,7 @@ App\Entity\Person:
     firstName: <firstName()>
     lastName: <lastName()>
     dateOfBirth: <dateTimeBetween('1920-01-01', '2007-12-30')>
+    biography: <sentence()>
 
 App\Entity\Role:
   role_{1..5000}:

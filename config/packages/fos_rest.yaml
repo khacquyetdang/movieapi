@@ -4,6 +4,13 @@ fos_rest:
     default_format: json
   view:
     view_response_listener: force
+    mime_types:
+      json:
+        [
+          "application/json",
+          "application/json;version=1.0",
+          "application/json;version=1.1",
+        ]
   body_converter:
     enabled: true
     validate: true
@@ -14,6 +21,27 @@ fos_rest:
     exception_controller: App\Controller\ExceptionController::showAction
   serializer:
     groups: ["Default"]
+  versioning:
+    enabled: true
+    default_version: "1.0"
+    resolvers:
+      query: true
+      custom_header: true
+      media_type:
+        enabled: true
+    guessing_order:
+      - media_type
+      - custom_header
+      - query
+  format_listener:
+    enabled: true
+    rules:
+      - {
+          path: ^/,
+          prefer_extension: true,
+          fallback_format: json,
+          priorities: [json],
+        }
 #        codes:
 #            App\Exception\MyException: 403
 #        messages:
