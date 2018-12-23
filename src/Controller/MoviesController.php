@@ -134,6 +134,12 @@ class MoviesController extends AbstractController
 
     /**
      * @Rest\View
+     * @SWG\Delete(
+     *      @SWG\Parameter(name="movie", in="path", type="integer",
+     *                                  description="Movie id", required=true),
+     *      @SWG\Response(response="404", description="Returned when movie is not found")
+     *      @SWG\Response(response="204", description="Returned when movie is deleted correctly")
+     * )
      */
     public function deleteMovieAction(Movie $movie)
     {
