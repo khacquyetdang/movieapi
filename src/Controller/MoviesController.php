@@ -17,6 +17,7 @@ use FOS\RestBundle\Controller\ControllerTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\HttpFoundation\Request;
@@ -134,6 +135,9 @@ class MoviesController extends AbstractController
     /**
      * @Rest\View
      * @Cache(public=true, maxage=10, smaxage=10, mustRevalidate=true, expires="+10 second"))
+     * @SWG/Get(
+     *  tags={"Movie"}
+     *  )
      */
     public function getMovieAction(?Movie $movie)
     {

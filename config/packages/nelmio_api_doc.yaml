@@ -1,0 +1,13 @@
+nelmio_api_doc:
+  routes:
+    path_patterns:
+      - ^/movie
+      - ^/humans
+      - ^/user
+  documentation:
+    info:
+      title: "Movies API"
+      description: "Movie database API"
+      version: 1.0.0
+  models:
+    use_jms: true
