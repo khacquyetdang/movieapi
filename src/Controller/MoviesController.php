@@ -14,6 +14,7 @@ use App\Resource\Pagination\PageRequestFactory;
 use App\Resource\Pagination\Role\RolePagination;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\ControllerTrait;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -102,6 +103,23 @@ class MoviesController extends AbstractController
      * @Rest\View(statusCode=201)
      * @ParamConverter("movie", converter="fos_rest.request_body")
      * @Rest\NoRoute
+     * @SWG\Post(
+     *     tags={"Movie"},
+     *     summary="Add a new movie resource",
+     *     consumes={"application/json"},
+     *     produces={"application/json"},
+     *     @SWG\Parameter(name="body", in="body", required=true,
+     *                                 @SWG\Schema(type="array", @Model(type=Movie::class))),
+     *     @SWG\Response(response="201", description="Returned when resource
+     *                                   created", @SWG\Schema(type="array",
+     *                                   @Model(type=Movie::class))),
+     *     @SWG\Response(response="400", description="Returned when invalid
+     *                                   date posted"),
+     *     @SWG\Response(response="401", description="Returned when not
+     *                                   authenticated"),
+     *     @SWG\Response(response="403", description="Returned when token is
+     *                                   invalid or expired")
+     * )
      */
     public function postMoviesAction(Movie $movie, ConstraintViolationListInterface $validationErrors)
     {
@@ -135,9 +153,19 @@ class MoviesController extends AbstractController
     /**
      * @Rest\View
      * @Cache(public=true, maxage=10, smaxage=10, mustRevalidate=true, expires="+10 second"))
-     * @SWG/Get(
-     *  tags={"Movie"}
-     *  )
+     * @SWG\Get(
+     *     tags={"Movie"},
+     *     summary="Gets the movie",
+     *     consumes={"application/json"},
+     *     produces={"application/json"},
+     *     @SWG\Parameter(name="movie", in="path", type="integer",
+     *                                  description="Movie id", required=true),
+     *     @SWG\Response(response="200", description="Returned when
+     *                                   successful", @SWG\Schema(type="array",
+     *                                   @Model(type=Movie::class))),
+     *     @SWG\Response(response="404", description="Returned when movie is
+     *                                   not found")
+     * )
      */
     public function getMovieAction(?Movie $movie)
     {
